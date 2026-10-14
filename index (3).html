@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>مغامرة كنز الأشكال | المساحة والمحيط</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500;700;900&family=Lalezar&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme: light dark;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#1b4ad4; --grid:rgba(255,255,255,.07);
+  --ink:#0a0a0a; --paper:#ffffff; --muted:#5b5b66;
+  --yellow:#ffdf00; --green:#00d26a; --purple:#8a2be2; --cyan:#00d8ec; --red:#ff4d5e;
+  --bronze:#cd7f32; --silver:#c0c7d1; --gold:#ffc400;
+  --display:'Lalezar','Cairo',system-ui,sans-serif;
+  --body:'Cairo',system-ui,-apple-system,'Segoe UI',Tahoma,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ --bg:#122f8f; --grid:rgba(255,255,255,.06); --paper:#fdfdfd; --ink:#0a0a0a; }
+}
+:root[data-theme="dark"]{ --bg:#122f8f; --grid:rgba(255,255,255,.06); }
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{
+  margin:0;min-height:100%;font-family:var(--body);color:var(--ink);
+  background-color:var(--bg);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:32px 32px;
+  -webkit-tap-highlight-color:transparent;
+}
+button,input{font-family:inherit}
+:focus-visible{outline:4px solid var(--cyan);outline-offset:3px}
+
+.app{max-width:860px;margin:0 auto;padding:16px 14px 40px;position:relative}
+.deco{position:fixed;z-index:0;border:4px solid var(--ink);pointer-events:none}
+.deco.a{width:54px;height:36px;background:var(--yellow);top:14%;right:2%;transform:rotate(-14deg)}
+.deco.b{width:44px;height:44px;background:var(--purple);bottom:10%;left:2%;transform:rotate(18deg)}
+@media(max-width:700px){.deco{display:none}}
+.screen{position:relative;z-index:1}
+
+/* top bar */
+.hud{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap}
+.chip{background:var(--paper);border:4px solid var(--ink);padding:6px 14px;font-weight:900;box-shadow:4px 4px 0 var(--ink)}
+.track{display:flex;gap:8px}
+.step{width:44px;height:44px;border:4px solid var(--ink);background:var(--paper);display:grid;place-items:center;font-size:20px;font-weight:900;filter:grayscale(1);opacity:.7}
+.step.now{opacity:1;filter:none;background:var(--yellow);transform:translateY(-3px);box-shadow:3px 3px 0 var(--ink)}
+.step.done{opacity:1;filter:none}
+.step.done.bronze{background:var(--bronze)} .step.done.silver{background:var(--silver)} .step.done.gold{background:var(--gold)}
+
+/* blocks */
+.panel{background:var(--paper);border:5px solid var(--ink);box-shadow:8px 8px 0 var(--ink);padding:20px}
+.title-box{background:var(--yellow);border:6px solid var(--ink);box-shadow:8px 8px 0 var(--ink);text-align:center;padding:26px 14px}
+.title-box h1{font-family:var(--display);font-weight:400;font-size:clamp(40px,10vw,84px);line-height:1.05;margin:0}
+.title-box p{font-size:clamp(18px,4vw,28px);font-weight:900;margin:8px 0 0}
+h2{font-family:var(--display);font-weight:400;font-size:clamp(28px,6vw,42px);margin:0 0 6px;line-height:1.15}
+h3{margin:0 0 8px;font-size:20px;font-weight:900}
+.lead{font-size:18px;line-height:1.8;margin:0 0 14px}
+.btn{
+  display:inline-block;font-weight:900;font-size:22px;color:var(--ink);cursor:pointer;
+  background:var(--green);border:5px solid var(--ink);padding:10px 28px;box-shadow:6px 6px 0 var(--ink);
+  transition:transform .08s,box-shadow .08s;
+}
+.btn:hover{transform:translate(-2px,-2px);box-shadow:8px 8px 0 var(--ink)}
+.btn:active{transform:translate(4px,4px);box-shadow:2px 2px 0 var(--ink)}
+.btn.alt{background:var(--yellow)} .btn.sm{font-size:18px;padding:6px 18px;box-shadow:4px 4px 0 var(--ink)}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.center{text-align:center}
+.mt{margin-top:18px}
+
+/* intro */
+.credits{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:22px 0;background:var(--paper);border:4px solid var(--ink);padding:12px;text-align:center}
+.credits small{display:block;color:var(--muted);font-weight:700}
+.credits b{font-size:16px}
+@media(max-width:560px){.credits{grid-template-columns:1fr}}
+.name-row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;align-items:center;margin:0 0 20px}
+.name-row label{font-weight:900;color:#fff;font-size:18px}
+.name-row input{font-size:20px;font-weight:700;padding:8px 12px;border:4px solid var(--ink);background:var(--paper);color:var(--ink);min-width:220px}
+.how{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-top:20px}
+.how div{background:var(--paper);border:4px solid var(--ink);padding:12px}
+.how div:nth-child(1){border-top-color:var(--yellow)} 
+.how .ic{font-size:28px}
+.how p{margin:4px 0 0;font-size:15px;line-height:1.6}
+.goals{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px}
+@media(max-width:640px){.goals{grid-template-columns:1fr}}
+.goals ul{margin:0;padding:0 20px 0 0;line-height:1.9;font-size:16px}
+
+/* questions */
+.q{background:var(--paper);border:5px solid var(--ink);padding:16px;margin-bottom:16px}
+.q .t{font-size:20px;font-weight:900;line-height:1.7;margin:0 0 12px}
+.q .t .n{display:inline-grid;place-items:center;min-width:34px;height:34px;background:var(--yellow);border:3px solid var(--ink);margin-left:8px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.opts.tf{grid-template-columns:1fr 1fr;max-width:420px}
+@media(max-width:480px){.opts{grid-template-columns:1fr}.opts.tf{grid-template-columns:1fr 1fr}}
+.opt{font-size:20px;font-weight:900;padding:10px 12px;border:4px solid var(--ink);background:#fff;color:var(--ink);cursor:pointer;text-align:center;box-shadow:4px 4px 0 var(--ink);transition:transform .08s}
+.opt:hover:not([disabled]){background:var(--yellow);transform:translate(-1px,-1px)}
+.opt[disabled]{cursor:default}
+.opt.ok{background:var(--green)} .opt.no{background:var(--red);color:#fff}
+.fb{margin-top:10px;font-weight:700;font-size:17px;line-height:1.7;min-height:1.7em}
+.fb.ok{color:#05713a} .fb.no{color:#b3001b}
+@media (prefers-color-scheme: dark){ /* panels stay white; no color change needed */ }
+
+.guard{display:flex;gap:12px;align-items:flex-start;background:var(--cyan);border:4px solid var(--ink);padding:12px 14px;margin-bottom:16px;font-size:17px;line-height:1.7;font-weight:700}
+.guard .av{font-size:34px;line-height:1}
+
+.fig{display:flex;justify-content:center;margin:6px 0 16px;overflow-x:auto}
+
+/* garden builder */
+.builder{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+@media(max-width:700px){.builder{grid-template-columns:1fr}}
+.ctrl{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#fff;border:4px solid var(--ink);padding:8px 12px;margin-bottom:10px}
+.ctrl span{font-weight:900;font-size:19px}
+.stepper{display:flex;align-items:center;gap:8px}
+.stepper button{width:44px;height:44px;border:4px solid var(--ink);background:var(--yellow);font-size:26px;font-weight:900;cursor:pointer;line-height:1;color:var(--ink)}
+.stepper button:active{transform:translate(2px,2px)}
+.stepper output{min-width:46px;text-align:center;font-size:26px;font-weight:900}
+.read{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:6px 0 12px}
+.read div{border:4px solid var(--ink);padding:8px;text-align:center;font-weight:900}
+.read .p{background:var(--cyan)} .read .a{background:var(--green)}
+.read b{display:block;font-size:28px}
+.target{font-size:15px;font-weight:700;color:var(--muted)}
+.checks{list-style:none;padding:0;margin:10px 0 0}
+.checks li{margin:6px 0;font-weight:700;line-height:1.6}
+
+/* results */
+.badge-pop{display:grid;place-items:center;width:150px;height:150px;margin:0 auto 12px;border:6px solid var(--ink);border-radius:50%;font-size:70px;box-shadow:6px 6px 0 var(--ink);animation:pop .6s cubic-bezier(.2,1.6,.4,1) both}
+.badge-pop.bronze{background:var(--bronze)} .badge-pop.silver{background:var(--silver)} .badge-pop.gold{background:var(--gold)}
+@keyframes pop{from{transform:scale(0) rotate(-40deg)}to{transform:scale(1) rotate(0)}}
+.stats{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:14px 0}
+.stats .chip{font-size:18px}
+.cert{background:#fffbe0;border:8px double var(--ink);padding:24px 16px;text-align:center;margin:16px 0}
+.cert .k{font-family:var(--display);font-size:clamp(30px,7vw,52px);line-height:1.2;margin:4px 0}
+.cert .nm{display:inline-block;font-size:clamp(24px,5vw,36px);font-weight:900;border-bottom:5px solid var(--ink);padding:0 18px;margin:8px 0}
+.board{width:100%;border-collapse:collapse;margin-top:8px}
+.board td,.board th{border:3px solid var(--ink);padding:6px 10px;text-align:center;font-weight:700}
+.board th{background:var(--yellow)}
+.board tr.me td{background:#d5ffe6}
+
+@media (prefers-reduced-motion: reduce){ .badge-pop{animation:none} .btn,.opt{transition:none} }
+</style>
+</head>
+<body>
+<div class="deco a"></div><div class="deco b"></div>
+<main class="app" id="app" aria-live="polite"></main>
+
+<script>
+(function(){
+  "use strict";
+  var app = document.getElementById('app');
+
+  /* ---------- بيانات اللعبة ---------- */
+  var L1 = [
+    {t:"المحيط هو المسافة حول الشكل الهندسي من الخارج.", a:true,  why:"صح! المحيط هو طول الحدود الخارجية للشكل."},
+    {t:"المساحة هي الجزء الموجود داخل حدود الشكل.",     a:true,  why:"صح! المساحة هي الأرض التي بداخل السور."},
+    {t:"نجد محيط أي شكل بضرب جميع أطوال أضلاعه.",       a:false, why:"الإجابة: خطأ. المحيط نحصل عليه بجمع أطوال الأضلاع، لا بضربها."}
+  ];
+  var L2 = [
+    {t:"محيط المستطيل الموضح هو:", o:["11 سم","22 سم","24 سم","19 سم"], a:1, why:"المحيط = (8 + 3) × 2 = 22 سم.", fig:true},
+    {t:"مساحة المستطيل الموضح هي:", o:["11 سم²","24 سم²","22 سم²","25 سم²"], a:1, why:"المساحة = الطول × العرض = 8 × 3 = 24 سم².", fig:true},
+    {t:"مربع طول ضلعه 5 سم، مساحته تساوي:", o:["20 سم²","10 سم²","25 سم²","30 سم²"], a:2, why:"مساحة المربع = 5 × 5 = 25 سم²."}
+  ];
+  var LABEL = ['أ','ب','ج','د'];
+
+  var BADGES = {
+    1:{cls:'bronze', icon:'🥉', name:'الشارة البرونزية'},
+    2:{cls:'silver', icon:'🥈', name:'الشارة الفضية'},
+    3:{cls:'gold',   icon:'🥇', name:'الشارة الذهبية'}
+  };
+  var LEVELS = {1:'حارس الحدود', 2:'صياد المساحة', 3:'مهندس الأشكال'};
+
+  /* ---------- الحالة ---------- */
+  var S;
+  function fresh(){
+    return {screen:'intro', name:'', score:10, level:1, badges:{}, ans:{}, idx:0, gL:6, gW:3, gTries:0, gDone:false, gPts:0, finishedSaved:false};
+  }
+  S = fresh();
+
+  /* ---------- أدوات ---------- */
+  function h(s){ var d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+  function store(op, key, val){
+    try{
+      if(op==='get'){ return JSON.parse(localStorage.getItem(key)||'[]'); }
+      localStorage.setItem(key, JSON.stringify(val));
+    }catch(e){ return []; }
+  }
+  function hud(){
+    var steps='';
+    for(var i=1;i<=3;i++){
+      var cls='step';
+      if(S.badges[i]) cls+=' done '+BADGES[i].cls; else if(S.level===i && S.screen!=='final') cls+=' now';
+      steps+='<div class="'+cls+'" title="'+LEVELS[i]+'">'+(S.badges[i]?BADGES[i].icon:i)+'</div>';
+    }
+    return '<div class="hud"><div class="chip">⭐ '+S.score+' نقطة</div>'+
+           '<div class="chip">'+h(S.name||'فريق الكنز')+'</div>'+
+           '<div class="track" aria-label="مستويات المغامرة">'+steps+'</div></div>';
+  }
+  function rectSVG(){
+    return '<svg viewBox="0 0 300 150" width="300" height="150" role="img" aria-label="مستطيل طوله 8 سم وعرضه 3 سم">'+
+      '<rect x="40" y="30" width="200" height="75" fill="#ffdf00" stroke="#0a0a0a" stroke-width="5"/>'+
+      '<text x="140" y="75" text-anchor="middle" font-family="Cairo,sans-serif" font-weight="900" font-size="20" fill="#0a0a0a">مستطيل</text>'+
+      '<text x="140" y="135" text-anchor="middle" font-family="Cairo,sans-serif" font-weight="900" font-size="20" fill="#0a0a0a">8 سم</text>'+
+      '<text x="262" y="75" text-anchor="middle" font-family="Cairo,sans-serif" font-weight="900" font-size="20" fill="#0a0a0a">3 سم</text></svg>';
+  }
+  function gardenSVG(len, wid){
+    var N=12, c=22, W=N*c, pad=6;
+    var g='<svg viewBox="0 0 '+(W+pad*2)+' '+(W+pad*2)+'" width="100%" style="max-width:320px;background:#e9f9ee;border:4px solid #0a0a0a" role="img" aria-label="رسم الحديقة: '+len+' في '+wid+'">';
+    for(var i=0;i<=N;i++){
+      g+='<line x1="'+(pad+i*c)+'" y1="'+pad+'" x2="'+(pad+i*c)+'" y2="'+(pad+W)+'" stroke="#9bd3b0" stroke-width="1"/>';
+      g+='<line x1="'+pad+'" y1="'+(pad+i*c)+'" x2="'+(pad+W)+'" y2="'+(pad+i*c)+'" stroke="#9bd3b0" stroke-width="1"/>';
+    }
+    // المستطيل يبدأ من أعلى اليمين ليناسب الاتجاه العربي
+    var rw=len*c, rh=wid*c, x=pad+W-rw, y=pad;
+    g+='<rect x="'+x+'" y="'+y+'" width="'+rw+'" height="'+rh+'" fill="#00d26a" fill-opacity=".75" stroke="#0a0a0a" stroke-width="4"/>';
+    g+='<text x="'+(x+rw/2)+'" y="'+(y+rh/2+6)+'" text-anchor="middle" font-family="Cairo,sans-serif" font-weight="900" font-size="18" fill="#0a0a0a">'+len+' × '+wid+'</text>';
+    g+='</svg>';
+    return g;
+  }
+
+  /* ---------- الشاشات ---------- */
+  function renderIntro(){
+    app.innerHTML =
+      '<section class="screen">'+
+      '<div class="title-box"><h1>مغامرة كنز الأشكال</h1><p>استكشاف المساحة والمحيط</p></div>'+
+      '<div class="credits"><div><small>المادة</small><b>الرياضيات - الصف الرابع</b></div>'+
+        '<div><small>إعداد</small><b>عبدالرحمن علي فتحي</b></div>'+
+        '<div><small>إشراف</small><b>د. مها / د. زينب أحمد</b></div></div>'+
+      '<div class="name-row"><label for="nm">اسم فريقك</label><input id="nm" maxlength="24" placeholder="مثال: فريق النجوم" autocomplete="off"></div>'+
+      '<div class="center"><button class="btn" id="go">ابدأ المهمة! 🚀</button></div>'+
+      '<div class="how">'+
+        '<div><div class="ic">🎯</div><h3>اجمع النقاط</h3><p>كل إجابة صحيحة من أول مرة تمنحك نقاطًا.</p></div>'+
+        '<div><div class="ic">🏅</div><h3>شارات التميز</h3><p>برونزية، فضية، وذهبية عند إتمام كل مستوى.</p></div>'+
+        '<div><div class="ic">🔑</div><h3>مفتاح العبور</h3><p>أنجز 80% من المهمات لتنتقل للمستوى التالي.</p></div>'+
+        '<div><div class="ic">🏆</div><h3>شهادة الخبير</h3><p>أنهِ المستويات الثلاثة لتحصل على شهادة "خبير المساحة".</p></div>'+
+      '</div>'+
+      '<div class="goals panel" style="margin-top:22px;box-shadow:none">'+
+        '<div><h3>أهداف المغامرة 🎓</h3><ul><li>توضيح مفهوم المساحة والمحيط بدقة.</li><li>تحديد حدود الأشكال الهندسية بمهارة.</li><li>استنتاج طرق حساب المساحة والمحيط.</li><li>التمييز بين الجزء الداخلي والحد الخارجي.</li></ul></div>'+
+        '<div><h3>سلوكيات الأبطال 🦸</h3><ul><li>حل التدريبات والأنشطة بحماس.</li><li>المشاركة الفعالة في مناقشة الأشكال.</li><li>إكمال المهمات التعاونية مع الزملاء.</li><li>الوصول لدرجة الإتقان المطلوبة (80%).</li></ul></div>'+
+      '</div></section>';
+    var inp=document.getElementById('nm');
+    document.getElementById('go').onclick=function(){
+      S.name=inp.value.trim()||'فريق الكنز';
+      S.screen='level'; S.level=1; render();
+    };
+    inp.addEventListener('keydown',function(e){ if(e.key==='Enter') document.getElementById('go').click(); });
+  }
+
+  function renderL1(){
+    var done = Object.keys(S.ans).length===L1.length;
+    var html = hud()+'<section class="screen"><h2>المستوى الأول | حارس الحدود 🛡️</h2>'+
+      '<p class="lead" style="color:#fff;font-weight:700">مفتاح العبور: إنجاز 80% من المهمات للانتقال للمستوى التالي!</p>';
+    L1.forEach(function(q,i){
+      var a=S.ans[i];
+      var sel = (a!==undefined);
+      html+='<div class="q"><p class="t"><span class="n">'+(i+1)+'</span>'+q.t+'</p><div class="opts tf">';
+      [true,false].forEach(function(v){
+        var c='opt';
+        if(sel){ if(v===q.a) c+=' ok'; else if(v===a.v) c+=' no'; }
+        html+='<button class="'+c+'" data-q="'+i+'" data-v="'+v+'" '+(sel?'disabled':'')+'>'+(v?'صح':'خطأ')+'</button>';
+      });
+      html+='</div><div class="fb '+(sel?(a.ok?'ok':'no'):'')+'">'+(sel?(a.ok?'✔ ':'✘ ')+q.why:'')+'</div></div>';
+    });
+    html+='<div class="guard"><div class="av">🧙</div><div><b>رسالة الحارس:</b><br>تذكر يا بطل! المحيط هو "السور" والمساحة هي "الأرض" التي داخل السور.</div></div>';
+    if(done) html+=levelEnd(L1.length, 1);
+    html+='</section>';
+    app.innerHTML=html;
+    app.querySelectorAll('.opt').forEach(function(b){
+      b.onclick=function(){
+        var i=+b.dataset.q, v=b.dataset.v==='true', ok=(v===L1[i].a);
+        S.ans[i]={v:v,ok:ok}; if(ok) S.score+=10; render(true);
+      };
+    });
+    bindEnd();
+  }
+
+  function renderL2(){
+    var done = Object.keys(S.ans).length===L2.length;
+    var html = hud()+'<section class="screen"><h2>المستوى الثاني | صياد المساحة 🎯</h2>'+
+      '<p class="lead" style="color:#fff;font-weight:700">احسب المحيط والمساحة!</p>'+
+      '<div class="q"><div class="fig">'+rectSVG()+'</div><p class="target" style="text-align:center;margin:0">الشكل للأسئلة 1 و 2</p></div>';
+    L2.forEach(function(q,i){
+      var a=S.ans[i], sel=(a!==undefined);
+      html+='<div class="q"><p class="t"><span class="n">'+(i+1)+'</span>'+q.t+'</p><div class="opts">';
+      q.o.forEach(function(o,k){
+        var c='opt';
+        if(sel){ if(k===q.a) c+=' ok'; else if(k===a.k) c+=' no'; }
+        html+='<button class="'+c+'" data-q="'+i+'" data-k="'+k+'" '+(sel?'disabled':'')+'>'+LABEL[k]+') '+o+'</button>';
+      });
+      html+='</div><div class="fb '+(sel?(a.ok?'ok':'no'):'')+'">'+(sel?(a.ok?'✔ أحسنت! ':'✘ الإجابة الصحيحة: '+LABEL[q.a]+'. ')+q.why:'')+'</div></div>';
+    });
+    if(done) html+=levelEnd(L2.length, 2);
+    html+='</section>';
+    app.innerHTML=html;
+    app.querySelectorAll('.opt').forEach(function(b){
+      b.onclick=function(){
+        var i=+b.dataset.q, k=+b.dataset.k, ok=(k===L2[i].a);
+        S.ans[i]={k:k,ok:ok}; if(ok) S.score+=10; render(true);
+      };
+    });
+    bindEnd();
+  }
+
+  function levelEnd(total, lvl){
+    var right=0; Object.keys(S.ans).forEach(function(k){ if(S.ans[k].ok) right++; });
+    var pct=Math.round(right/total*100), pass=pct>=80;
+    var out='<div class="panel center mt"><h3>نتيجتك: '+right+' من '+total+' ('+pct+'%)</h3>';
+    if(pass){
+      out+='<p class="lead">مفتاح العبور معك! حصلت على '+BADGES[lvl].name+' '+BADGES[lvl].icon+'</p><button class="btn" id="next">'+(lvl===1?'إلى المستوى الثاني':'إلى المستوى الثالث')+'</button>';
+    }else{
+      out+='<p class="lead">تحتاج 80% على الأقل للعبور. راجع إجاباتك وحاول من جديد، أنت قادر!</p><button class="btn alt" id="retry">إعادة المستوى</button>';
+    }
+    return out+'</div>';
+  }
+  function bindEnd(){
+    var n=document.getElementById('next'), r=document.getElementById('retry');
+    if(n) n.onclick=function(){
+      S.badges[S.level]=true; S.screen='badge'; render();
+    };
+    if(r) r.onclick=function(){
+      // خصم نقاط المحاولات السابقة وإعادة المستوى
+      Object.keys(S.ans).forEach(function(k){ if(S.ans[k].ok) S.score-=10; });
+      S.ans={}; render();
+    };
+  }
+
+  function renderL3(){
+    var P=2*(S.gL+S.gW), A=S.gL*S.gW;
+    var html = hud()+'<section class="screen"><h2>المستوى الثالث | مهندس الأشكال 📐</h2>'+
+      '<div class="panel"><h3>مهمة المهندس المحترف</h3>'+
+      '<p class="lead" style="margin:0">طُلب منك تصميم حديقة مدرسية على شكل مستطيل، بحيث يكون <b>محيطها 20 مترًا</b> و<b>مساحتها 24 مترًا مربعًا</b>. حدّد الطول والعرض ثم اختبر تصميمك.</p></div>'+
+      '<div class="builder mt"><div class="panel" style="padding:14px">'+
+        '<div class="center">'+gardenSVG(S.gL,S.gW)+'</div></div>'+
+      '<div>'+
+        '<div class="ctrl"><span>الطول (متر)</span><div class="stepper"><button data-d="L+" aria-label="زيادة الطول">+</button><output>'+S.gL+'</output><button data-d="L-" aria-label="إنقاص الطول">−</button></div></div>'+
+        '<div class="ctrl"><span>العرض (متر)</span><div class="stepper"><button data-d="W+" aria-label="زيادة العرض">+</button><output>'+S.gW+'</output><button data-d="W-" aria-label="إنقاص العرض">−</button></div></div>'+
+        '<div class="read"><div class="p">المحيط<b>'+P+' م</b><span class="target">المطلوب 20</span></div><div class="a">المساحة<b>'+A+' م²</b><span class="target">المطلوب 24</span></div></div>'+
+        '<button class="btn" id="chk" '+(S.gDone?'disabled':'')+'>اختبر تصميمك</button>'+
+        '<div class="fb" id="fb3" style="font-size:18px">'+(S.gMsg||'')+'</div>'+
+      '</div></div>';
+    if(S.gDone){
+      html+='<div class="panel mt"><h3>كيف تأكدت من حساباتك؟ ✅</h3><ul class="checks">'+
+        '<li>المحيط = (الطول + العرض) × 2 = (6 + 4) × 2 = 20 مترًا ✔</li>'+
+        '<li>المساحة = الطول × العرض = 6 × 4 = 24 مترًا مربعًا ✔</li>'+
+        '<li>اشرح لفريقك: لماذا لا يصلح 8 × 3 أو 12 × 2 رغم أن مساحتهما 24؟ (محيطهما 22 و28).</li></ul>'+
+        '<div class="center mt"><button class="btn" id="fin">احصل على شهادتك 🎓</button></div></div>';
+    }
+    html+='<div class="guard mt"><div class="av">🧙</div><div><b>معايير الفوز:</b> دقة الرسم الهندسي، صحة القوانين المستخدمة، وضوح التفسير والتعاون، وإتمام المهمة في الوقت المحدد.</div></div></section>';
+    app.innerHTML=html;
+    app.querySelectorAll('.stepper button').forEach(function(b){
+      b.onclick=function(){
+        if(S.gDone) return;
+        var d=b.dataset.d, v=d[1]==='+'?1:-1;
+        if(d[0]==='L') S.gL=Math.min(12,Math.max(1,S.gL+v)); else S.gW=Math.min(12,Math.max(1,S.gW+v));
+        S.gMsg=''; render(true);
+      };
+    });
+    var chk=document.getElementById('chk');
+    if(chk) chk.onclick=function(){
+      var P=2*(S.gL+S.gW), A=S.gL*S.gW;
+      if(P===20 && A===24){
+        S.gDone=true;
+        S.gPts=Math.max(10, 30-5*S.gTries);
+        S.score+=S.gPts;
+        S.gMsg='<span class="ok">✔ تصميم ممتاز! حصلت على '+S.gPts+' نقطة.</span>';
+      }else{
+        S.gTries++;
+        var m;
+        if(P===20) m='المحيط صحيح، لكن المساحة '+A+' م² وليست 24. جرّب تغيير الطول والعرض مع إبقاء مجموعهما 10.';
+        else if(A===24) m='المساحة صحيحة، لكن المحيط '+P+' م وليس 20. ابحث عن شكل آخر مساحته 24.';
+        else m='المحيط '+P+' م والمساحة '+A+' م². لم يتحقق الشرطان بعد.';
+        if(S.gTries>=2) m+=' تلميح: نصف المحيط = 10، فابحث عن عددين مجموعهما 10 وحاصل ضربهما 24.';
+        S.gMsg='<span class="no">✘ '+m+'</span>';
+      }
+      render(true);
+    };
+    var fin=document.getElementById('fin');
+    if(fin) fin.onclick=function(){ S.badges[3]=true; S.screen='badge'; render(); };
+  }
+
+  function renderBadge(){
+    var lv=S.level, b=BADGES[lv];
+    var next = lv<3 ? 'متابعة إلى المستوى '+(lv===1?'الثاني':'الثالث') : 'عرض الشهادة';
+    var tip = {
+      1:'أحسنت! عرفت الفرق بين السور (المحيط) والأرض (المساحة).',
+      2:'رائع! طبقت قانون المحيط (الطول + العرض) × 2 وقانون المساحة (الطول × العرض).',
+      3:'مذهل! صممت حديقة تحقق الشرطين معًا بتفكير المهندسين.'
+    }[lv];
+    app.innerHTML = hud()+'<section class="screen"><div class="panel center">'+
+      '<div class="badge-pop '+b.cls+'">'+b.icon+'</div>'+
+      '<h2>'+b.name+'</h2><p class="lead">'+tip+'</p>'+
+      '<div class="stats"><div class="chip">⭐ رصيدك: '+S.score+'</div></div>'+
+      '<button class="btn" id="cont">'+next+'</button></div></section>';
+    document.getElementById('cont').onclick=function(){
+      S.ans={}; S.idx=0;
+      if(lv<3){ S.level=lv+1; S.screen='level'; } else { S.screen='final'; }
+      render();
+    };
+  }
+
+  function renderFinal(){
+    if(!S.finishedSaved){
+      var list=store('get','kanz_board');
+      list.push({n:S.name,s:S.score,t:Date.now()});
+      list.sort(function(a,b){return b.s-a.s;});
+      store('set','kanz_board',list.slice(0,10));
+      S.finishedSaved=true;
+    }
+    var list2=store('get','kanz_board').slice(0,5), mine=false, rows='';
+    list2.forEach(function(r,i){
+      var me=(!mine && r.n===S.name && r.s===S.score); if(me) mine=true;
+      rows+='<tr class="'+(me?'me':'')+'"><td>'+(i+1)+'</td><td>'+h(r.n)+'</td><td>'+r.s+'</td></tr>';
+    });
+    var rank = S.score>=100?'خبير مساحة ومحيط 🌟':S.score>=80?'مغامر ماهر':'بطل مجتهد';
+    app.innerHTML = hud()+'<section class="screen"><div class="panel center">'+
+      '<h2>وجدتم الكنز! 🏴‍☠️</h2>'+
+      '<div class="stats"><div class="chip">🥉 🥈 🥇 الشارات الثلاث</div><div class="chip">⭐ '+S.score+' من 100</div></div>'+
+      '<div class="cert"><div>شهادة تقدير</div><div class="k">خبير المساحة</div><div>تُمنح لـ</div>'+
+      '<div class="nm">'+h(S.name)+'</div><div>لإتقانه مفهومي المساحة والمحيط — لقبك: <b>'+rank+'</b></div></div>'+
+      '<h3>لوحة صدارة الفرق (على هذا الجهاز)</h3>'+
+      '<table class="board"><thead><tr><th>#</th><th>الفريق</th><th>النقاط</th></tr></thead><tbody>'+rows+'</tbody></table>'+
+      '<p class="lead mt">انطلقوا الآن.. الكنز في انتظار الأذكياء! ✨</p>'+
+      '<button class="btn" id="again">العب من جديد</button></div></section>';
+    document.getElementById('again').onclick=function(){ S=fresh(); render(); };
+  }
+
+  /* ---------- المُشغّل ---------- */
+  function render(keepScroll){
+    var y=window.scrollY;
+    if(S.screen==='intro') renderIntro();
+    else if(S.screen==='badge') renderBadge();
+    else if(S.screen==='final') renderFinal();
+    else if(S.level===1) renderL1();
+    else if(S.level===2) renderL2();
+    else renderL3();
+    if(keepScroll===true) window.scrollTo(0,y); else window.scrollTo(0,0);
+  }
+  render();
+})();
+</script>
+</body>
+</html>
